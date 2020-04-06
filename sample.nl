@@ -4,7 +4,6 @@
 (define a_ "hallo    ")
 a
 
-(define b a)
+(define b a_)
 
-a b a_
-
+a_

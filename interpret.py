@@ -26,6 +26,7 @@ def tokenizer(filE):
             # TODO: Support #t #f
             # TODO: support backtabbed unicode ( "\u0022" is '"'
             # TODO: support escaping doublequotes like this: "\""
+            # TODO: support for #lang
             if mode=="int": # TODO handle for floats and other numbers
                 if char in validNumbers:
                     currentToken=(currentToken*10)+validNumbers.find(char)
@@ -132,47 +133,55 @@ def printTypedValue(node,sep=" ",innerSep=" ",end=None,file=None,flush=None):
                 print(sep,end="")
             printTypedValue(item,sep=innerSep,innerSep=innerSep+sep,end="",file=file,flush=False)
         print(")",end=end)
-def runner(tree,args,s=[{}]):
+def runner(tree,args,loud=False,s=[{}]):
     """Call a lisp tree (such as a file or a function)"""
     #s is the value stack (always push to the front!!)
     #print(s)
+    lastValue=("list",())
     for node in tree:
         name,value=node
-        printMode=len(s)==1
         if name=="ident":
             var=getVarFromStack(s,value)
             if var!=False and var!=True:
-                printTypedValue(var)
+                if loud:
+                    printTypedValue(var)
+                lastValue=var
             elif not var:
                 printError("notDefined")
                 print(value)
                 sys.exit(1)
-            else:
-                print(f"#<builtin {value}>")
+            elif loud:
+                print(f"#<procedure:{value}>") # TODO: there's more than just procedures
         elif name=="list": # We need to "run" this code (sortof)
             firstInList=value[0]
-            if firstInList[0]=="ident" or\
-                firstInList[0]=="dbString":
-                    var=getVarFromStack(s,firstInList[1])
-                    if var!=False and var!=True:
-                        pass
-                    elif not var:
-                        printError("notDefined")
-                        print(firstInList[1])
-                        sys.exit(1)
-                    else:
-                        a=value[1:]
-                        if firstInList[1]=="define":
-                            if a[0][0]=="ident":
-                                s[0][a[0][1]]=a[1]
-                            else:
-                                pass #TODO: functions
-        else: printTypedValue(node)
-    # TODO: return evaluation
+            if firstInList[0]=="ident" or firstInList[0]=="dbString":
+                var=getVarFromStack(s,firstInList[1])
+                if var!=False and var!=True:
+                    pass # TODO: function calls
+                elif not var:
+                    printError("notDefined")
+                    print(firstInList[1])
+                    sys.exit(1)
+                else:
+                    a=value[1:]
+                    if firstInList[1]=="define":
+                        if a[0][0]=="ident":
+                            s.insert(0,{})
+                            s[1][a[0][1]]=runner([a[1]],[],s=s)
+                            #print(s)
+                            s.pop(0)
+                        else:
+                            pass #TODO: functions
+        else:
+            if loud:
+                printTypedValue(node)
+            lastValue=node
+    return lastValue
 if __name__ == '__main__':
     if len(sys.argv) < 2:
         printError("noArgs")
         sys.exit(1)
     filE=open(sys.argv[1])
-    runner(parser(tokenizer(filE)),sys.argv[1:])
+    outValue=runner(parser(tokenizer(filE)),sys.argv[1:],loud=True)
+    sys.exit(outValue[1])
 

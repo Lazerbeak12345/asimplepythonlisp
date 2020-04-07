@@ -105,7 +105,7 @@ def parser(tokens):
         printError("missingEndParen")
         print("\t",parseStack)
     return parseStack[0]
-BUILTIN_RUNTIME_FUNCTIONS=["define"]
+BUILTIN_RUNTIME_FUNCTIONS=["define","print","substring"]
 def getVarFromStack(s,name):
     """
     Get the tuple value of a variable from the stack
@@ -133,11 +133,16 @@ def printTypedValue(node,sep=" ",innerSep=" ",end=None,file=None,flush=None):
                 print(sep,end="")
             printTypedValue(item,sep=innerSep,innerSep=innerSep+sep,end="",file=file,flush=False)
         print(")",end=end)
-def runner(tree,args,loud=False,s=[{}]):
+def printAsText(node):
+    name,value=node
+    if name=="int" or name=="dbString":
+        print(value)
+    #TODO: other types
+def runner(tree,loud=False,s=[{}]):
     """Call a lisp tree (such as a file or a function)"""
     #s is the value stack (always push to the front!!)
     #print(s)
-    lastValue=("list",())
+    lastValue=("list",[])
     for node in tree:
         name,value=node
         if name=="ident":
@@ -157,7 +162,20 @@ def runner(tree,args,loud=False,s=[{}]):
             if firstInList[0]=="ident" or firstInList[0]=="dbString":
                 var=getVarFromStack(s,firstInList[1])
                 if var!=False and var!=True:
-                    pass # TODO: function calls
+                    if var[0]!="lambda":
+                        pass #TODO throw error
+                    callArgs=value[1:]
+                    expectedArgs=var[1][0]
+                    if len(callArgs)>len(expectedArgs):
+                        pass #TODO throw error (more args than expected)
+                    elif len(callArgs)<len(expectedArgs):
+                        pass #TODO throw error (less args than expected)
+                    newLayer={}
+                    for index in range(len(expectedArgs)):
+                        newLayer[expectedArgs[index][1]]=callArgs[index]
+                    s.insert(0,newLayer)
+                    runner(var[1][1],False,s)
+                    s.pop(0)
                 elif not var:
                     printError("notDefined")
                     print(firstInList[1])
@@ -167,11 +185,26 @@ def runner(tree,args,loud=False,s=[{}]):
                     if firstInList[1]=="define":
                         if a[0][0]=="ident":
                             s.insert(0,{})
-                            s[1][a[0][1]]=runner([a[1]],[],s=s)
+                            s[1][a[0][1]]=runner([a[1]],s=s)
                             #print(s)
                             s.pop(0)
+                        elif a[0][0]=="list":
+                            if not a[0][1][0][0]=="ident":
+                                pass #TODO: print error
+                            newFuncName=a[0][1][0][1]
+                            newFuncArgs=a[0][1][1:]
+                            newFuncBody=a[1:]
+                            #TODO: test scope
+                            s[0][newFuncName]=("lambda",(newFuncArgs,newFuncBody))
                         else:
-                            pass #TODO: functions
+                            pass #TODO: print error
+                    elif firstInList[1]=="print":
+                        for item in a:#clunky, but allows more control of output
+                            printAsText(runner([item],s=s))
+                    elif firstInList[1]=="substring":
+                        print("substring",s)
+                    else:
+                        pass #TODO: print error
         else:
             if loud:
                 printTypedValue(node)
@@ -182,6 +215,8 @@ if __name__ == '__main__':
         printError("noArgs")
         sys.exit(1)
     filE=open(sys.argv[1])
-    outValue=runner(parser(tokenizer(filE)),sys.argv[1:],loud=True)
+    outValue=runner(parser(tokenizer(filE)),loud=True)
+    if outValue[0]=="list" and outValue[1]==[]:
+        sys.exit(0)
     sys.exit(outValue[1])
 

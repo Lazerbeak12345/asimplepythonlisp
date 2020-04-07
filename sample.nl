@@ -1,9 +1,9 @@
-1234 ; This will be printed
-"Let's define a variable"
-(define a 1)
-(define a_ "hallo    ")
-a
+(define pie 3)             ; defines pie to be 3
+ 
+(define (piece str)        ; defines piece as a function
+  (substring str 0 pie))   ;  of one argument
 
-(define b a_)
+pie
 
-a_
+(print
+  (piece "key lime"))

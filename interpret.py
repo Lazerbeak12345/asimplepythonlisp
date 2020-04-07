@@ -170,6 +170,7 @@ def runner(tree,loud=False,s=[{}]):
                         pass #TODO throw error (more args than expected)
                     elif len(callArgs)<len(expectedArgs):
                         pass #TODO throw error (less args than expected)
+                    #TODO: make lazy loaded
                     newLayer={}
                     for index in range(len(expectedArgs)):
                         newLayer[expectedArgs[index][1]]=callArgs[index]

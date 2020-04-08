@@ -46,11 +46,20 @@ def tokenizer(filE):
                 if len(currentToken)>1 and currentToken[-1]=='"':
                     add=True
                     currentToken=currentToken[0:-1]
+                    #TODO: do mode="string"
                 else:
                     currentToken+=char
             elif mode=="comment":
                 if char=='\n':
                     add=True
+            elif mode=="#":
+                #TODO: add more than just identifier type # things
+                if char in validListEnds or\
+                    char in validNumbers or\
+                    char in validWhitespace:
+                        add=True
+                else:
+                    currentToken+=char
             if add:# We are searching
                 if currentToken!=None:
                     tokens.append((mode,currentToken))
@@ -71,6 +80,9 @@ def tokenizer(filE):
                     currentToken=""
                 elif char==";":
                     mode="comment"
+                elif char=="#":
+                    mode="#"
+                    currentToken=""
                 else:
                     mode="ident"
                     currentToken=char
@@ -143,9 +155,14 @@ def runner(tree,loud=False,s=[{}]):
     #s is the value stack (always push to the front!!)
     #print(s)
     lastValue=("list",[])
+    lang=None
     for node in tree:
         name,value=node
-        if name=="ident":
+        if name=="#":
+            lang=False
+        elif lang==False:
+            lang=value
+        elif name=="ident":
             var=getVarFromStack(s,value)
             if var!=False and var!=True:
                 if loud:
@@ -201,7 +218,8 @@ def runner(tree,loud=False,s=[{}]):
                             pass #TODO: print error
                     elif firstInList[1]=="print":
                         for item in a:#clunky, but allows more control of output
-                            printAsText(runner([item],s=s))
+                            #printAsText(runner([item],s=s))
+                            printTypedValue(runner([item],s=s),end="")
                     elif firstInList[1]=="substring":
                         strin=runner([a[0]],s=s)
                         if strin[0]!="dbString":

@@ -7,5 +7,4 @@ pie
 
 (print
   (piece "key lime"))
-;TODO: change this file extension. It's already taken (by another lisp. lol). Perhaps just do rkt.
 

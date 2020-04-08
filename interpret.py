@@ -170,12 +170,12 @@ def runner(tree,loud=False,s=[{}]):
                         pass #TODO throw error (more args than expected)
                     elif len(callArgs)<len(expectedArgs):
                         pass #TODO throw error (less args than expected)
-                    #TODO: make lazy loaded
+                    #TODO: check that this is lazy loaded
                     newLayer={}
                     for index in range(len(expectedArgs)):
                         newLayer[expectedArgs[index][1]]=callArgs[index]
                     s.insert(0,newLayer)
-                    runner(var[1][1],False,s)
+                    lastValue=runner(var[1][1],False,s)
                     s.pop(0)
                 elif not var:
                     printError("notDefined")
@@ -203,7 +203,21 @@ def runner(tree,loud=False,s=[{}]):
                         for item in a:#clunky, but allows more control of output
                             printAsText(runner([item],s=s))
                     elif firstInList[1]=="substring":
-                        print("substring",s)
+                        strin=runner([a[0]],s=s)
+                        if strin[0]!="dbString":
+                            pass #TODO: print error
+                        start=runner([a[1]],s=s)
+                        if strin[0]!="int":
+                            pass #TODO: print error
+                        if start[1]>0:
+                            pass #TODO: print error
+                        if len(a)<3:
+                            end=("int",len(strin))
+                        else:
+                            end=runner([a[2]],s=s)
+                            if end[0]!="int":
+                                pass #TODO: print error
+                        lastValue=("dbString",strin[1][start[1]:end[1]])
                     else:
                         pass #TODO: print error
         else:

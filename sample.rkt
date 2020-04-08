@@ -4,8 +4,7 @@
 (define (piece str)        ; defines piece as a function
   (substring str 0 pie))   ;  of one argument
 
-pie
+piece
 
-(print
-  (piece "key lime"))
+substring
 

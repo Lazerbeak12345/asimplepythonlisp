@@ -166,8 +166,13 @@ def runner(tree,loud=False,s=[{}]):
             var=getVarFromStack(s,value)
             if var!=False and var!=True:
                 if loud:
-                    printTypedValue(var)
-                lastValue=var
+                    if var[0]=="lambda":
+                        print(f"#<procedure:{value}>") # TODO: there's more than just procedures
+                    else:
+                        printTypedValue(var)
+                        lastValue=var
+                else:
+                    lastValue=var
             elif not var:
                 printError("notDefined")
                 print(value)

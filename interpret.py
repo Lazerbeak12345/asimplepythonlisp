@@ -9,6 +9,8 @@ initializer""",
         "notDefined":"This variable is not defined:",
         "notWrittenYet":"""The code that handles this interpreter feature has
 not been written yet""",
+        "notIdentInArg":"""The value supplied as an argument when defining a
+function was not an identifier""",
         }
 def printError(code):
     print(f"Error: {code}")
@@ -235,6 +237,11 @@ def runner(tree,loud=False,s=[{}]):
                             newFuncName=a[0][1][0][1]
                             newFuncArgs=a[0][1][1:]
                             newFuncBody=a[1:]
+                            for item in newFuncArgs:
+                                if item[0]!="ident":
+                                    printError("notIdentInArg")
+                                    printTypedValue(item)
+                                    sys.exit(1)
                             #TODO: test scope
                             s[0][newFuncName]=("lambda",(newFuncArgs,newFuncBody))
                         else:

@@ -13,4 +13,5 @@
 ;
 ;(define (halfbake flavor
 ;                  (string-append flavor " creme brulee")))
+(bake "apple")
 

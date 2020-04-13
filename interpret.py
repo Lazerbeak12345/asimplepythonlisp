@@ -25,6 +25,7 @@ def tokenizer(filE):
     validNumbers="0123456789" # All valid numbers at the index of their value
     validListEnds="()[]{}"
     validWhitespace=" \t\n\r"
+    cantBeInIdent="()[]{}\",'`;#|\\"
     for line in filE:
         for char in line:
             # TODO: support 1/2 3.14 6.02e+23 1+2i 9999999999999999999999
@@ -41,10 +42,9 @@ def tokenizer(filE):
                 if not char in validWhitespace:
                     add=True
             elif mode=="ident":
-                if char in validListEnds or\
-                    char in validNumbers or\
-                    char in validWhitespace:
-                        add=True
+                if char in validWhitespace or\
+                        char in cantBeInIdent:
+                    add=True
                 else:
                     currentToken+=char
             elif mode=="dbString":

@@ -4,8 +4,11 @@ errorCodes={ # TODO translate this dictionary
         "noArgs":"I need another argument, representing the filename",
         "extraTerminator":"Extra list terminator found!",
         "missingEndParen":"Missing at least one list terminator",
-        "mismachTerminator":"List terminator does not match last list initializer",
+        "mismachTerminator":"""List terminator does not match last list
+initializer""",
         "notDefined":"This variable is not defined:",
+        "notWrittenYet":"""The code that handles this interpreter feature has
+not been written yet""",
         }
 def printError(code):
     print(f"Error: {code}")
@@ -47,6 +50,14 @@ def tokenizer(filE):
                     add=True
                     currentToken=currentToken[0:-1]
                     #TODO: do mode="string"
+                elif len(currentToken)>0 and currentToken[-1]=="\\":
+                    currentToken=currentToken[0:-1] # Remove the backslash
+                    if char=="n":
+                        currentToken+="\n"
+                    elif char=="\"":
+                        currentToken+="\""
+                    else:
+                        pass #TODO throw error
                 else:
                     currentToken+=char
             elif mode=="comment":
@@ -117,7 +128,13 @@ def parser(tokens):
         printError("missingEndParen")
         print("\t",parseStack)
     return parseStack[0]
-BUILTIN_RUNTIME_FUNCTIONS=["define","print","substring"]
+BUILTIN_RUNTIME_FUNCTIONS=[
+        "define",
+        "print",
+        "printf",
+        "substring",
+        "string-append"
+        ]
 def getVarFromStack(s,name):
     """
     Get the tuple value of a variable from the stack
@@ -145,10 +162,11 @@ def printTypedValue(node,sep=" ",innerSep=" ",end=None,file=None,flush=None):
                 print(sep,end="")
             printTypedValue(item,sep=innerSep,innerSep=innerSep+sep,end="",file=file,flush=False)
         print(")",end=end)
-def printAsText(node):
+def printAsText(node,end="\n"):
     name,value=node
     if name=="int" or name=="dbString":
-        print(value)
+        print(value,end="")
+    print(end,end="")
     #TODO: other types
 def runner(tree,loud=False,s=[{}]):
     """Call a lisp tree (such as a file or a function)"""
@@ -223,8 +241,13 @@ def runner(tree,loud=False,s=[{}]):
                             pass #TODO: print error
                     elif firstInList[1]=="print":
                         for item in a:#clunky, but allows more control of output
-                            #printAsText(runner([item],s=s))
                             printTypedValue(runner([item],s=s),end="")
+                    elif firstInList[1]=="printf":
+                        strin=runner([a[0]],s=s)
+                        if strin[0]!="dbString":
+                            pass #TODO: print error
+                        for item in a:#clunky, but allows more control of output
+                            printAsText(runner([item],s=s),end="")
                     elif firstInList[1]=="substring":
                         strin=runner([a[0]],s=s)
                         if strin[0]!="dbString":
@@ -241,8 +264,17 @@ def runner(tree,loud=False,s=[{}]):
                             if end[0]!="int":
                                 pass #TODO: print error
                         lastValue=("dbString",strin[1][start[1]:end[1]])
+                    elif firstInList[1]=="string-append":
+                        out=""
+                        for chunk in a:
+                            strin=runner([chunk],s=s)
+                            if strin[0]!="dbString":
+                                pass #TODO: print error
+                            out+=strin[1]
+                        lastValue=("dbString",out)
                     else:
-                        pass #TODO: print error
+                        printError("notWrittenYet")
+                        sys.exit(1)
         else:
             if loud:
                 printTypedValue(node)
@@ -254,7 +286,8 @@ if __name__ == '__main__':
         sys.exit(1)
     filE=open(sys.argv[1])
     outValue=runner(parser(tokenizer(filE)),loud=True)
-    if outValue[0]=="list" and outValue[1]==[]:
-        sys.exit(0)
-    sys.exit(outValue[1])
+    printTypedValue(outValue)
+    #if outValue[0]=="list" and outValue[1]==[]:
+    #    sys.exit(0)
+    #sys.exit(outValue[1])
 

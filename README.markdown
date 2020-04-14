@@ -3,15 +3,15 @@
 Once upon A time, an asipiring computer programmer heard of a distant, nigh
 unapproachable land called "lisp." He was reading a book that he had purchaced
 recently from the library, and at the time, only knew ECMAScript 3. He was
-interested in theis book because it told of the history of early computers from
+interested in this book because it told of the history of early computers from
 the perspective of IBM.
 
-This book I read the entire origin story of "LISP." As I knew this book was
-published not long before 1990, I suspected, and in many cases so, that all
-"modern" tech mentioned in that book would now currently be residing in one of
-many computer history sections in various well-known museums around the world.
-And while this is somewhat true with lisp, imagine my suprise, months later,
-when this same list prossessor showed up on Stack Overflow as a prominant
+This book I read contained the entire origin story of "LISP." As I knew this
+book was published not long before 1990, I suspected, and in many cases so, that
+all "modern" tech mentioned in that book would now currently be residing in one
+of many computer history sections in various well-known museums around the
+world. And while this is somewhat true with lisp, imagine my suprise, months
+later, when this same list prossessor showed up on Stack Overflow as a prominant
 Artificial Intelligance programming language. What I heard, though, was that
 "It's not a real language, it just makes programming easier for people who
 don't know what a memory buffer is" Looking back, this is _hardly_ the case,
@@ -44,7 +44,7 @@ should make sence, but if it doesn't, good luck.
 this) I might re-write this to be multiple files.
 4. It is programmed from the perspective of someone with _no experience
 whatsoever_ using the language that it mimics the functionality of. I'm sure
-that although it may _seem_ to run fine, it is most likely _riddled_ with bugs
+that although it may _seem_ to run fine, it is most likely _riddled_ with bugs.
 For one, right now, there are a _ton_ of scoping issues, a _ton_ of invalid
 native argument issues, and a _ton_ of issues with the lazy parameter
 evaluation.

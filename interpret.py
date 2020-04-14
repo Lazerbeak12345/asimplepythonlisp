@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+#TODO seperate into multiple files
 import sys
 errorCodes={ # TODO translate this dictionary
         "noArgs":"I need another argument, representing the filename",
@@ -135,7 +136,9 @@ BUILTIN_RUNTIME_FUNCTIONS=[
         "print",
         "printf",
         "substring",
-        "string-append"
+        "string-append",
+        "string-length",
+        "string?"
         ]
 def getVarFromStack(s,name):
     """
@@ -279,6 +282,11 @@ def runner(tree,loud=False,s=[{}]):
                                 pass #TODO: print error
                             out+=strin[1]
                         lastValue=("dbString",out)
+                    elif firstInList[1]=="string-length":
+                        strin=runner([chunk],s=s)
+                        if strin[0]!="dbString":
+                            pass #TODO: print error
+                        lastValue=("int",len(strin))
                     else:
                         printError("notWrittenYet")
                         sys.exit(1)

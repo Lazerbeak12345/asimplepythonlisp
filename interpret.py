@@ -126,6 +126,13 @@ def parser(tokens):
                         printError("mismachTerminator")
                         print("\t",parseStack,f"\n\tCurrent term {value}\n\tLast term {old}")
         else:
+            if name=="#":#literals are weird
+                if value=="f":
+                    name="bool"
+                    value=False
+                elif value=="t":
+                    name="bool"
+                    value=True
             parseStack[i].append((name,value))
     if len(parseStack)>1:
         printError("missingEndParen")
@@ -181,7 +188,7 @@ def runner(tree,loud=False,s=[{}]):
     lang=None
     for node in tree:
         name,value=node
-        if name=="#":
+        if name=="#" and value=="lang":
             lang=False
         elif lang==False:
             lang=value
@@ -287,8 +294,12 @@ def runner(tree,loud=False,s=[{}]):
                         if strin[0]!="dbString":
                             pass #TODO: print error
                         lastValue=("int",len(strin))
+                    elif firstInList[1]=="string?":
+                        strin=runner([chunk],s=s)
+                        lastValue=("bool",strin[0]=="dbString")
                     else:
                         printError("notWrittenYet")
+                        print(firstInList[1])
                         sys.exit(1)
         else:
             if loud:

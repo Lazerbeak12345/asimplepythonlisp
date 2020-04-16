@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 #TODO seperate into multiple files
 import sys
+import math
 errorCodes={ # TODO translate this dictionary
         "noArgs":"I need another argument, representing the filename",
         "extraTerminator":"Extra list terminator found!",
@@ -145,7 +146,8 @@ BUILTIN_RUNTIME_FUNCTIONS=[
         "substring",
         "string-append",
         "string-length",
-        "string?"
+        "string?",
+        "sqrt"
         ]
 def getVarFromStack(s,name):
     """
@@ -290,13 +292,18 @@ def runner(tree,loud=False,s=[{}]):
                             out+=strin[1]
                         lastValue=("dbString",out)
                     elif firstInList[1]=="string-length":
-                        strin=runner([chunk],s=s)
+                        strin=runner([a[0]],s=s)
                         if strin[0]!="dbString":
                             pass #TODO: print error
                         lastValue=("int",len(strin))
                     elif firstInList[1]=="string?":
-                        strin=runner([chunk],s=s)
+                        strin=runner([a[0]],s=s)
                         lastValue=("bool",strin[0]=="dbString")
+                    elif firstInList[1]=="sqrt":
+                        intin=runner([a[0]],s=s)
+                        if strin[0]!="int":
+                            pass #TODO: print error
+                        lastValue=("int",math.sqrt(intin[1]))
                     else:
                         printError("notWrittenYet")
                         print(firstInList[1])

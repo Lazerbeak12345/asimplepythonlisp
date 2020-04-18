@@ -36,8 +36,14 @@ def tokenizer(filE):
             # TODO: support escaping doublequotes like this: "\""
             # TODO: support for #lang
             if mode=="int": # TODO handle for floats and other numbers
-                if char in validNumbers:
+                if char in validWhitespace or\
+                        char in cantBeInIdent:
+                    add=True
+                elif char in validNumbers:
                     currentToken=(currentToken*10)+validNumbers.find(char)
+                elif currentToken==-1:
+                    mode="ident"
+                    currentToken="-"+char
                 else:
                     add=True
             elif mode=="ws":
@@ -81,9 +87,12 @@ def tokenizer(filE):
                 mode="token"
                 currentToken=None
                 add=False
-                if char in validNumbers:
+                if char in validNumbers or char=="-":
                     mode="int"
-                    currentToken=validNumbers.find(char)
+                    if char=="-":
+                        currentToken=-1
+                    else:
+                        currentToken=validNumbers.find(char)
                 elif char in validWhitespace:
                     mode="ws"
                 elif char in validListEnds:

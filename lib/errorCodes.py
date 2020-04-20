@@ -1,9 +1,9 @@
-LANG="en-us"
+LANG="en-US"
 def printError(code):
     print(f"Error: {code}")
     print(errorCodes[LANG][code])
 errorCodes={
-        "en-us":{ # TODO translate this dictionary
+        "en-US":{ # TODO translate this dictionary
             "noArgs":"I need another argument, representing the filename",
             "extraTerminator":"Extra list terminator found!",
             "missingEndParen":"Missing at least one list terminator",

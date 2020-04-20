@@ -1,3 +1,4 @@
+from lib.errorCodes import errorCodes
 def tokenizer(filE):
     """Look through a given file, and return a list of tuples, first value type
     second is value"""

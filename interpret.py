@@ -169,7 +169,10 @@ def runner(tree,loud=False,s=[{}]):
                         intin=runner([a[0]],s=s)
                         if strin[0]!="int":
                             pass #TODO: print error
-                        lastValue=("int",math.sqrt(intin[1]))
+                        if intin[1]>0:
+                            lastValue=("int",math.sqrt(intin[1]))
+                        else:
+                            lastValue=("int",complex(0,math.sqrt(-1*intin[1])))
                     else:
                         printError("notWrittenYet")
                         print(firstInList[1])

@@ -10,9 +10,7 @@ errorCodes={
             "mismachTerminator":"""List terminator does not match last list
     initializer""",
             "notDefined":"This variable is not defined:",
-            "notWrittenYet":"""The code that handles this interpreter feature has
-    not been written yet""",
-            "notIdentInArg":"""The value supplied as an argument when defining a
-    function was not an identifier""",
+            "notWrittenYet":"The code that handles this interpreter feature has not been written yet",
+            "notIdentInArg":"The value supplied as an argument when defining a function was not an identifier",
             }
         }

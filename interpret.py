@@ -13,7 +13,12 @@ BUILTIN_RUNTIME_FUNCTIONS=[
         "string-append",
         "string-length",
         "string?",
-        "sqrt"
+        "sqrt",
+        "+",
+        "<",
+        ">=",
+        "number?",
+        "equal?"
         ]
 def getVarFromStack(s,name):
     """
@@ -165,14 +170,65 @@ def runner(tree,loud=False,s=[{}]):
                     elif firstInList[1]=="string?":
                         strin=runner([a[0]],s=s)
                         lastValue=("bool",strin[0]=="dbString")
+                    elif firstInList[1]=="number?":
+                        intin=runner([a[0]],s=s)
+                        lastValue=("bool",strin[0]=="int")
+                    elif firstInList[1]=="equal?":
+                        lastInt=None
+                        for num in a:
+                            intin=runner([a[0]],s=s)
+                            if not lastInt:
+                                lastInt=intin
+                            elif not lastInt==intin:
+                                lastValue=("bool",False)
+                                break
+                            else:
+                                lastInt=intin
+                        lastValue=("bool",True)
                     elif firstInList[1]=="sqrt":
                         intin=runner([a[0]],s=s)
-                        if strin[0]!="int":
+                        if intin[0]!="int":
                             pass #TODO: print error
                         if intin[1]>0:
                             lastValue=("int",math.sqrt(intin[1]))
                         else:
                             lastValue=("int",complex(0,math.sqrt(-1*intin[1])))
+                    elif firstInList[1]=="+":
+                        total=0
+                        for num in a:
+                            intin=runner([a[0]],s=s)
+                            if intin[0]!="int":
+                                pass #TODO: print error
+                            total+=intin[1]
+                        lastValue=("int",total)
+                    elif firstInList[1]=="<":
+                        lastInt=None
+                        for num in a:
+                            intin=runner([a[0]],s=s)
+                            if intin[0]!="int":
+                                pass #TODO: print error
+                            if not lastInt:
+                                lastInt=intin
+                            elif not lastInt<intin:
+                                lastValue=("bool",False)
+                                break
+                            else:
+                                lastInt=intin
+                        lastValue=("bool",True)
+                    elif firstInList[1]==">=":
+                        lastInt=None
+                        for num in a:
+                            intin=runner([a[0]],s=s)
+                            if intin[0]!="int":
+                                pass #TODO: print error
+                            if not lastInt:
+                                lastInt=intin
+                            elif not lastInt>=intin:
+                                lastValue=("bool",False)
+                                break
+                            else:
+                                lastInt=intin
+                        lastValue=("bool",True)
                     else:
                         printError("notWrittenYet")
                         print(firstInList[1])
